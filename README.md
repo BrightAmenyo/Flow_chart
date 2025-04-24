@@ -27,4 +27,4 @@ This project visualizes a research workflow using a modern, visually appealing f
 - Color inspiration and design adjustments based on user feedback and provided palettes.
 
 ---
-For any questions or further customization, please contact the project owner.
+For any questions or further customization, please contact me.
