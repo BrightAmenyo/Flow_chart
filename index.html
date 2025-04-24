@@ -10,19 +10,21 @@
             justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 10px;
+            margin: 0 auto;
+            padding: 20px;
             background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            max-width: 2400px;
         }
         .container {
             width: 100%;
-            max-width: 2400px;
-            margin: 0 auto 40px auto;
+            max-width: 1600px;
+            margin: 0 auto;
             background: white;
-            padding: 50px 80px;
+            padding: 35px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            min-height: 900px;
+            min-height: 1000px;
+            max-height: 1000px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,13 +33,15 @@
         .mermaid {
             width: 100%;
             height: 100%;
-            font-size: 56px;
+            font-size: 42px;
             font-family: Arial, sans-serif;
             font-weight: 700;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
+            transform: scale(1);
+            transform-origin: center center;
         }
         .logo-container {
             display: flex;
@@ -80,140 +84,108 @@
 
     <div class="container">
         <div class="mermaid">
-        flowchart LR
-            subgraph Planning["Planning"]
-                A["Project Start<br/>July 2024"] --> B["Instrument<br/>Development"]
-                B --> C["Modified STARS<br/>4 Ps Marketing"]
-                C --> D["Qualtrics Design"]
+        flowchart TB
+            Planning["Planning Phase"]
+            Planning --> DataPrep["Data Preparation"]
+            Planning --> Collection["Data Collection"]
+            Planning --> Analysis["Analysis"]
+            Planning --> Outcomes["Outcomes"]
+            Planning --> Dissemination["Dissemination"]
+
+            subgraph Planning["Planning Phase"]
+                direction TB
+                A["Start<br/>Jul '24"] --> B["Instrument"]
+                B --> C["STARS<br/>4 Ps"]
+                C --> D["Qualtrics"]
+                D --> E["Pilot<br/>n=12"]
             end
             
-            subgraph Initial["Initial Phase"]
-                D --> E["Pilot Study<br/>Sept 2024 n=12"]
+            subgraph DataPrep["Data Preparation"]
+                direction TB
+                subgraph StoreVal["Store Validation"]
+                    direction LR
+                    V1["DLCP List<br/>811"] --> V2["API"]
+                    V2 --> V2a["Location"]
+                    V2 --> V2b["Hours"]
+                    V2 --> V2c["Status"]
+                    V2a --> V3["Verified<br/>811"]
+                end
+                subgraph Power["Sample Size"]
+                    direction LR
+                    S1["Pop: 611"] --> S2["Parameters"]
+                    S2 --> S2a["Effect: 0.3"]
+                    S2 --> S2b["Alpha: 0.05"]
+                    S2 --> S2c["df = 7"]
+                    S2a & S2b & S2c --> S3["Power<br/>0.9435925"]
+                    S3 --> S4["n=384"]
+                    S4 --> S5["FPC"]
+                    S5 --> S6["n=236"]
+                end
+                StoreVal --> Power
             end
             
             subgraph Collection["Data Collection"]
-                E --> F["Field Work"]
-                
-                subgraph DataValidation["Store Validation"]
-                    V1["Initial DLCP List<br/>811 Stores"] --> V2["Custom API Development"]
-                    V2 --> V2a["Location Check"]
-                    V2 --> V2b["Operating Hours"]
-                    V2 --> V2c["Store Status"]
-                    V2a & V2b & V2c --> V3["Verified Active Stores<br/>611 Stores"]
+                direction TB
+                subgraph Field["Field Work"]
+                    direction TB
+                    F["Survey"] --> G["Assessment"]
+                    F --> H["Quality"]
+                    F --> I["R Shiny"]
+                    I --> I2["Map/Calc/Filter"]
                 end
-                
-                subgraph SampleSize["Statistical Power Analysis"]
-                    S1["Population: 611 stores"] --> S2["Chi-square Test Parameters"]
-                    S2 --> S2a["Effect Size (w): 0.3"]
-                    S2 --> S2b["Significance Level: 0.05"]
-                    S2 --> S2c["df = 7 (Wards*Store Types)"]
-                    
-                    S2a & S2b & S2c --> S3["Power Calculation"]
-                    S3 --> S4["Initial n=384"]
-                    S4 --> S5["Finite Population Correction"]
-                    S5 --> S6["Final Sample Size<br/>n=236<br/>Power = 94.36%"]
+                subgraph Process["Processing"]
+                    direction TB
+                    H --> D1["Clean"] --> J["Analysis"]
                 end
-                
-                F --> G["Store Assessment<br/>Inside/Outside"]
-                F --> H["Data Quality"]
-                
-                subgraph DataCleaning["Data Cleaning & Processing"]
-                    D1["Column Renaming"] --> D2["Data Dictionary Creation"]
-                    D2 --> D3["Variable Transformation"]
-                    D3 --> D4["Remove Missing Values<br/>Non-surveyed Stores"]
-                end
-                
-                H --> DataCleaning
-                
-                F --> I["Supporting Tools"]
-                I --> I2["R Shiny App Features"]
-                I2 --> I2a["Interactive Map<br/>Survey Status Tracking"]
-                I2 --> I2b["Sample Size Calculator"]
-                I2 --> I2c["Store Type & Ward Filters"]
-                
-                V3 --> SampleSize
-                SampleSize --> F
-                DataCleaning --> J
+                I2 --> H
             end
             
-            subgraph Analysis["Statistical Analysis"]
-                J["Data Analysis"] --> ST["Statistical Tests"]
-                ST --> ST1["Chi-square Test<br/>Association Analysis"]
-                ST --> ST2["Monte Carlo Simulation<br/>Robust P-values"]
-                ST --> ST3["Fisher's Exact Test<br/>Small Sample Sizes"]
-                
-                ST --> LR["Logistic Regression"]
-                LR --> LR1["4 Ps Analysis"]
-                LR1 --> LR2["Price Factors"]
-                LR1 --> LR3["Place Factors"]
-                LR1 --> LR4["Product Factors"]
-                LR1 --> LR5["Promotion Factors"]
-                
-                ST1 & ST2 & ST3 & LR --> K["Results Interpretation<br/>Ward & Store Analysis"]
+            subgraph Analysis["Analysis"]
+                direction TB
+                subgraph Stats["Statistical"]
+                    direction LR
+                    ST["Test"] --> ST1["Chi²"]
+                    ST --> ST2["Monte<br/>Carlo"]
+                    ST --> ST3["Fisher"]
+                end
+                subgraph Market["Marketing"]
+                    direction TB
+                    ST --> LR["Regression"]
+                    LR --> LR1["4 Ps"]
+                    LR1 --> LR2["Price"]
+                    LR1 --> LR3["Place"]
+                    LR1 --> LR4["Product"]
+                    LR1 --> LR5["Promo"]
+                end
+                ST1 & ST2 & ST3 & LR --> K["Results"]
             end
             
             subgraph Outcomes["Outcomes"]
-                K --> L["Future Research<br/>Store Analysis"]
-                K --> M["Policy Changes<br/>Tax & Marketing"]
+                direction TB
+                K --> L["Future<br/>Research"]
+                K --> M["Policy<br/>Changes"]
+            end
+            
+            subgraph Dissemination["Dissemination"]
+                direction TB
+                APHA["APHA"]
+                NOTOH["NOTOH"]
+                DCHealth["DC Health"]
+                K --> APHA
+                K --> NOTOH
+                K --> DCHealth
             end
 
-            %% Styling
-            style Planning fill:#e4f2ff,stroke:#2980b9,stroke-width:2px,color:#000000,fontSize:80px
-            style Initial fill:#e4f2ff,stroke:#2980b9,stroke-width:2px,color:#000000,fontSize:80px
-            style Collection fill:#e4f2ff,stroke:#2980b9,stroke-width:2px,color:#000000,fontSize:80px
-            style Analysis fill:#e4f2ff,stroke:#2980b9,stroke-width:2px,color:#000000,fontSize:80px
-            style Outcomes fill:#e4f2ff,stroke:#2980b9,stroke-width:2px,color:#000000,fontSize:80px
-            style DataValidation fill:#f0f9ff,stroke:#3498db,stroke-width:2px,color:#000000,fontSize:80px
-            style SampleSize fill:#f0f9ff,stroke:#3498db,stroke-width:2px,color:#000000,fontSize:80px
-            style DataCleaning fill:#f0f9ff,stroke:#3498db,stroke-width:2px,color:#000000,fontSize:80px
+            %% Three-color pastel scheme: Light Blue, Sand, Blue (Outcomes & Dissemination)
+            classDef planning fill:#90CAF9,stroke:#90CAF9,stroke-width:3px,color:#333,rx:14px,ry:14px,font-size:22px;
+            classDef mainphase fill:#F4E2D8,stroke:#F4E2D8,stroke-width:3px,color:#333,rx:14px,ry:14px,font-size:22px;
+            classDef bluephase fill:#90CAF9,stroke:#90CAF9,stroke-width:3px,color:#333,rx:14px,ry:14px,font-size:22px;
+            classDef subnode fill:#90CAF9,stroke:#90CAF9,stroke-width:3px,color:#333,rx:14px,ry:14px,font-size:22px;
 
-            %% Individual node styling
-            style A fontSize:72px,fontWeight:700
-            style B fontSize:72px,fontWeight:700
-            style C fontSize:72px,fontWeight:700
-            style D fontSize:72px,fontWeight:700
-            style E fontSize:72px,fontWeight:700
-            style F fontSize:72px,fontWeight:700
-            style G fontSize:72px,fontWeight:700
-            style H fontSize:72px,fontWeight:700
-            style I fontSize:72px,fontWeight:700
-            style J fontSize:72px,fontWeight:700
-            style K fontSize:72px,fontWeight:700
-            style L fontSize:72px,fontWeight:700
-            style M fontSize:72px,fontWeight:700
-            style V1 fontSize:72px,fontWeight:700
-            style V2 fontSize:72px,fontWeight:700
-            style V2a fontSize:72px,fontWeight:700
-            style V2b fontSize:72px,fontWeight:700
-            style V2c fontSize:72px,fontWeight:700
-            style V3 fontSize:72px,fontWeight:700
-            style S1 fontSize:72px,fontWeight:700
-            style S2 fontSize:72px,fontWeight:700
-            style S2a fontSize:72px,fontWeight:700
-            style S2b fontSize:72px,fontWeight:700
-            style S2c fontSize:72px,fontWeight:700
-            style S3 fontSize:72px,fontWeight:700
-            style S4 fontSize:72px,fontWeight:700
-            style S5 fontSize:72px,fontWeight:700
-            style S6 fontSize:72px,fontWeight:700
-            style D1 fontSize:72px,fontWeight:700
-            style D2 fontSize:72px,fontWeight:700
-            style D3 fontSize:72px,fontWeight:700
-            style D4 fontSize:72px,fontWeight:700
-            style I2 fontSize:72px,fontWeight:700
-            style I2a fontSize:72px,fontWeight:700
-            style I2b fontSize:72px,fontWeight:700
-            style I2c fontSize:72px,fontWeight:700
-            style ST fontSize:72px,fontWeight:700
-            style ST1 fontSize:72px,fontWeight:700
-            style ST2 fontSize:72px,fontWeight:700
-            style ST3 fontSize:72px,fontWeight:700
-            style LR fontSize:72px,fontWeight:700
-            style LR1 fontSize:72px,fontWeight:700
-            style LR2 fontSize:72px,fontWeight:700
-            style LR3 fontSize:72px,fontWeight:700
-            style LR4 fontSize:72px,fontWeight:700
-            style LR5 fontSize:72px,fontWeight:700
+            class Planning planning;
+            class DataPrep,Collection,Analysis mainphase;
+            class Outcomes,Dissemination bluephase;
+            class StoreVal,Power,Field,Process,Stats,Market,APHA,NOTOH,DCHealth subnode;
         </div>
     </div>
 
@@ -228,20 +200,23 @@
             startOnLoad: true,
             theme: 'default',
             flowchart: {
-                useMaxWidth: true,
+                useMaxWidth: false,
                 htmlLabels: true,
                 curve: 'basis',
-                nodeSpacing: 140,
-                rankSpacing: 140,
-                fontSize: 56,
-                padding: 30,
+                nodeSpacing: 35,
+                rankSpacing: 45,
+                fontSize: 38,
+                padding: 15,
                 defaultRenderer: 'dagre-wrapper',
                 htmlLabels: true,
-                width: 320,
-                height: 140,
+                width: 160,
+                height: 55,
                 fontFamily: 'Arial, sans-serif',
                 fontWeight: 700,
-                textAlign: 'center'
+                textAlign: 'center',
+                diagramPadding: 30,
+                subGraphPadding: 25,
+                clusterPadding: 20
             }
         });
     </script>
